@@ -1,0 +1,126 @@
+//setting up the pins
+//enA and enB are for the speed, en1 and en2 for the first motor directions, en3 and en4 for the second motor direction
+
+int enA = 5;
+int en1 = 6;
+int en2 = 7;
+
+int enB = 10;
+int en3 = 8;
+int en4 = 9;
+
+//setting start up speed
+int speed = 120;
+
+//char for the received char on the serial connection
+char received;
+
+
+void setup() {
+
+Serial.begin(9600);
+
+//setting the motor pins as outputs
+
+pinMode(enA, OUTPUT);
+pinMode(en1, OUTPUT);
+pinMode(en2, OUTPUT);
+
+pinMode(enB, OUTPUT);
+pinMode(en3, OUTPUT);
+pinMode(en4, OUTPUT);
+
+
+
+}
+
+//speed function to take care of the speed depending of the char received , brakes slow down the car by 10, gas accelerates the car by 10
+void Speed(){
+  if(received == 'G'){
+    if(speed < 230){
+    speed = speed + 10;  
+    //changing the received to stop it from repeating endlessly untill the button is pressed again  
+    received = 'Z';
+  }
+  }
+  if(received == 'B'){
+    if(speed > 0){
+    speed = speed - 10; 
+    //changing the received to stop it from repeating endlessly untill the button is pressed again        
+    received = 'Z'; 
+  }
+  }
+}
+
+
+//car function to take care of the directions depending on the char received
+void Car()
+{
+  
+  analogWrite(enA, speed);
+  analogWrite(enB, speed);
+
+  if(received == 'Y'){
+ 
+  
+  digitalWrite(en1, 1);
+  digitalWrite(en2, 0);  
+  digitalWrite(en3, 0);
+  digitalWrite(en4, 1);
+  }
+  else if(received == 'N'){
+
+    
+  digitalWrite(en1, 0);
+  digitalWrite(en2, 1);  
+  digitalWrite(en3, 1);
+  digitalWrite(en4, 0); 
+  }
+  else if(received == 'L'){
+  
+  
+  digitalWrite(en1, 1);
+  digitalWrite(en2, 0);  
+  digitalWrite(en3, 1);
+  digitalWrite(en4, 0);
+  }
+  else if(received == 'R'){
+  
+  digitalWrite(en1, 0);
+  digitalWrite(en2, 1);  
+  digitalWrite(en3, 0);
+  digitalWrite(en4, 1); 
+  }
+
+}
+
+void loop() {
+  
+//setting up the char received in the variable called 'received'
+
+if(Serial.available() > 0){
+char input = Serial.read();
+if(input == 'Y'){
+  received = 'Y';
+}
+else if(input == 'N'){
+  received = 'N';
+}
+else if(input == 'L'){
+  received = 'L';
+}
+else if(input == 'R'){
+  received = 'R';
+}
+else if(input == 'B'){
+  received = 'B';
+}
+else if(input == 'G'){
+  received = 'G';
+}
+}
+
+Speed();
+
+Car();
+}
